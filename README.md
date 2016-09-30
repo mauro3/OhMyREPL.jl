@@ -13,6 +13,7 @@ If you like this package please give it a star. I like stars.
 ### Installation
 
 ```jl
+Pkg.add("Crayons")
 Pkg.clone("https://github.com/KristofferC/Tokenize.jl")
 Pkg.clone("https://github.com/KristofferC/OhMyREPL.jl")
 ```
