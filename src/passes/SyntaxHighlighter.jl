@@ -7,63 +7,62 @@ using Tokenize
 using Tokenize.Tokens
 import Tokenize.Tokens: Token, kind, exactkind, iskeyword
 
-using ...ANSICodes
-import ...ANSICodes: ANSIToken, ANSIValue, ResetToken, merge!
+using Crayons
 
 import OhMyREPL: add_pass!, PASS_HANDLER
 
 type ColorScheme
-    symbol::ANSIToken
-    comment::ANSIToken
-    string::ANSIToken
-    call::ANSIToken
-    op::ANSIToken
-    keyword::ANSIToken
-    text::ANSIToken
-    function_def::ANSIToken
-    error::ANSIToken
-    argdef::ANSIToken
-    _macro::ANSIToken
-    number::ANSIToken
+    symbol::Crayon
+    comment::Crayon
+    string::Crayon
+    call::Crayon
+    op::Crayon
+    keyword::Crayon
+    text::Crayon
+    function_def::Crayon
+    error::Crayon
+    argdef::Crayon
+    _macro::Crayon
+    number::Crayon
 end
 
-symbol!(cs, token::ANSIToken) = cs.symbol = token
-comment!(cs, token::ANSIToken) = cs.comment = token
-string!(cs, token::ANSIToken) = cs.string = token
-call!(cs, token::ANSIToken) = cs.call = token
-op!(cs, token::ANSIToken) = cs.op = token
-keyword!(cs, token::ANSIToken) = cs.keyword = token
-text!(cs, token::ANSIToken) = cs.text = token
-function_def!(cs, token::ANSIToken) = cs.function_def = token
-error!(cs, token::ANSIToken) = cs.error = token
-argdef!(cs, token::ANSIToken) = cs.argdef = token
-macro!(cs, token::ANSIToken) = cs._macro = token
-number!(cs, token::ANSIToken) = cs.number = token
+symbol!(cs, crayon::Crayon) = cs.symbol = crayon
+comment!(cs, crayon::Crayon) = cs.comment = crayon
+string!(cs, crayon::Crayon) = cs.string = crayon
+call!(cs, crayon::Crayon) = cs.call = crayon
+op!(cs, crayon::Crayon) = cs.op = crayon
+keyword!(cs, crayon::Crayon) = cs.keyword = crayon
+text!(cs, crayon::Crayon) = cs.text = crayon
+function_def!(cs, crayon::Crayon) = cs.function_def = crayon
+error!(cs, crayon::Crayon) = cs.error = crayon
+argdef!(cs, crayon::Crayon) = cs.argdef = crayon
+macro!(cs, crayon::Crayon) = cs._macro = crayon
+number!(cs, crayon::Crayon) = cs.number = crayon
 
 function Base.show(io::IO, cs::ColorScheme)
     for n in fieldnames(cs)
-        tok = getfield(cs, n)
-        print(io, tok, "█ ", ResetToken())
+        crayon = getfield(cs, n)
+        print(io, crayon, "█ ", inv(crayon))
     end
-    print(io, ANSIToken(foreground = :default))
+    print(io, Crayon(foreground = :default))
 end
 
-ColorScheme() = ColorScheme([ANSIToken() for _ in 1:length(fieldnames(ColorScheme))]...)
+ColorScheme() = ColorScheme([Crayon() for _ in 1:length(fieldnames(ColorScheme))]...)
 
 function _create_juliadefault()
     cs = ColorScheme()
-    symbol!(cs, ANSIToken(bold = true))
-    comment!(cs, ANSIToken(bold = true))
-    string!(cs, ANSIToken(bold = true))
-    call!(cs, ANSIToken(bold = true))
-    op!(cs, ANSIToken(bold = true))
-    keyword!(cs, ANSIToken(bold = true))
-    text!(cs, ANSIToken(bold = true))
-    macro!(cs, ANSIToken(bold = true))
-    function_def!(cs, ANSIToken(bold = true))
-    error!(cs, ANSIToken(bold = true))
-    argdef!(cs, ANSIToken(bold = true))
-    number!(cs, ANSIToken(bold = true))
+    symbol!(cs, Crayon(bold = true))
+    comment!(cs, Crayon(bold = true))
+    string!(cs, Crayon(bold = true))
+    call!(cs, Crayon(bold = true))
+    op!(cs, Crayon(bold = true))
+    keyword!(cs, Crayon(bold = true))
+    text!(cs, Crayon(bold = true))
+    macro!(cs, Crayon(bold = true))
+    function_def!(cs, Crayon(bold = true))
+    error!(cs, Crayon(bold = true))
+    argdef!(cs, Crayon(bold = true))
+    number!(cs, Crayon(bold = true))
     return cs
 end
 
@@ -71,53 +70,53 @@ end
 # Try to represent the Monokai colorscheme.
 function _create_monokai()
     cs = ColorScheme()
-    symbol!(cs, ANSIToken(foreground = :magenta))
-    comment!(cs, ANSIToken(foreground = :dark_gray))
-    string!(cs, ANSIToken(foreground = :yellow))
-    call!(cs, ANSIToken(foreground = :cyan))
-    op!(cs, ANSIToken(foreground = :light_red))
-    keyword!(cs, ANSIToken(foreground = :light_red))
-    text!(cs, ANSIToken(foreground = :default))
-    macro!(cs, ANSIToken(foreground = :cyan))
-    function_def!(cs, ANSIToken(foreground = :green))
-    error!(cs, ANSIToken(foreground = :default))
-    argdef!(cs, ANSIToken(foreground = :cyan))
-    number!(cs, ANSIToken(foreground = :magenta))
+    symbol!(cs, Crayon(foreground = :magenta))
+    comment!(cs, Crayon(foreground = :dark_gray))
+    string!(cs, Crayon(foreground = :yellow))
+    call!(cs, Crayon(foreground = :cyan))
+    op!(cs, Crayon(foreground = :light_red))
+    keyword!(cs, Crayon(foreground = :light_red))
+    text!(cs, Crayon(foreground = :default))
+    macro!(cs, Crayon(foreground = :cyan))
+    function_def!(cs, Crayon(foreground = :green))
+    error!(cs, Crayon(foreground = :default))
+    argdef!(cs, Crayon(foreground = :cyan))
+    number!(cs, Crayon(foreground = :magenta))
     return cs
 end
 
 function _create_monokai_256()
     cs = ColorScheme()
-    symbol!(cs, ANSIToken(foreground = 141)) # purpleish
-    comment!(cs, ANSIToken(foreground = 60)) # greyish
-    string!(cs, ANSIToken(foreground = 208)) # beigish
-    call!(cs, ANSIToken(foreground = 81)) # cyanish
-    op!(cs, ANSIToken(foreground = 197)) # redish
-    keyword!(cs, ANSIToken(foreground = 197)) # redish
-    text!(cs, ANSIToken(foreground = :default))
-    macro!(cs, ANSIToken(foreground = 208)) # cyanish
-    function_def!(cs, ANSIToken(foreground = 148))
-    error!(cs, ANSIToken(foreground = :default))
-    argdef!(cs, ANSIToken(foreground = 81))  # cyanish
-    number!(cs, ANSIToken(foreground = 141)) # purpleish
+    symbol!(cs, Crayon(foreground = 141)) # purpleish
+    comment!(cs, Crayon(foreground = 60)) # greyish
+    string!(cs, Crayon(foreground = 208)) # beigish
+    call!(cs, Crayon(foreground = 81)) # cyanish
+    op!(cs, Crayon(foreground = 197)) # redish
+    keyword!(cs, Crayon(foreground = 197)) # redish
+    text!(cs, Crayon(foreground = :default))
+    macro!(cs, Crayon(foreground = 208)) # cyanish
+    function_def!(cs, Crayon(foreground = 148))
+    error!(cs, Crayon(foreground = :default))
+    argdef!(cs, Crayon(foreground = 81))  # cyanish
+    number!(cs, Crayon(foreground = 141)) # purpleish
     return cs
 end
 
 
 function _create_boxymonokai_256()
     cs = ColorScheme()
-    symbol!(cs, ANSIToken(foreground = 148))
-    comment!(cs, ANSIToken(foreground = 95))
-    string!(cs, ANSIToken(foreground = 148))
-    call!(cs, ANSIToken(foreground = 81))
-    op!(cs, ANSIToken(foreground = 158))
-    keyword!(cs, ANSIToken(foreground = 141))
-    text!(cs, ANSIToken(foreground = :default))
-    macro!(cs, ANSIToken(foreground = 81))
-    function_def!(cs, ANSIToken(foreground = 81))
-    error!(cs, ANSIToken(foreground = :default))
-    argdef!(cs, ANSIToken(foreground = 186))
-    number!(cs, ANSIToken(foreground = 208))
+    symbol!(cs, Crayon(foreground = 148))
+    comment!(cs, Crayon(foreground = 95))
+    string!(cs, Crayon(foreground = 148))
+    call!(cs, Crayon(foreground = 81))
+    op!(cs, Crayon(foreground = 158))
+    keyword!(cs, Crayon(foreground = 141))
+    text!(cs, Crayon(foreground = :default))
+    macro!(cs, Crayon(foreground = 81))
+    function_def!(cs, Crayon(foreground = 81))
+    error!(cs, Crayon(foreground = :default))
+    argdef!(cs, Crayon(foreground = 186))
+    number!(cs, Crayon(foreground = 208))
     return cs
 end
 
@@ -167,52 +166,52 @@ end
 add_pass!(PASS_HANDLER, "SyntaxHighlighter", SYNTAX_HIGHLIGHTER_SETTINGS, false)
 
 
-@compat function (highlighter::SyntaxHighlighterSettings)(ansitokens::Vector{ANSIToken}, tokens::Vector{Token}, ::Int)
+@compat function (highlighter::SyntaxHighlighterSettings)(crayons::Vector{Crayon}, tokens::Vector{Token}, ::Int)
     cscheme = highlighter.active
     prev_t = Tokens.Token()
     for (i, t) in enumerate(tokens)
         # a::x
         if exactkind(prev_t) == Tokens.DECLARATION
-            ansitokens[i-1] = cscheme.argdef
-            ansitokens[i] = cscheme.argdef
+            crayons[i-1] = cscheme.argdef
+            crayons[i] = cscheme.argdef
         # :foo
         elseif kind(t) == Tokens.IDENTIFIER && exactkind(prev_t) == Tokens.COLON
-            ansitokens[i-1] = cscheme.symbol
-            ansitokens[i] = cscheme.symbol
+            crayons[i-1] = cscheme.symbol
+            crayons[i] = cscheme.symbol
         # function
         elseif iskeyword(kind(t))
             if kind(t) == Tokens.TRUE || kind(t) == Tokens.FALSE
-                ansitokens[i] = cscheme.symbol
+                crayons[i] = cscheme.symbol
             else
-                ansitokens[i] = cscheme.keyword
+                crayons[i] = cscheme.keyword
             end
         # "foo"
         elseif kind(t) == Tokens.STRING || kind(t) == Tokens.TRIPLE_STRING || kind(t) == Tokens.CHAR
-            ansitokens[i] = cscheme.string
+            crayons[i] = cscheme.string
         # * -
         elseif Tokens.isoperator(kind(t))
-            ansitokens[i] = cscheme.op
+            crayons[i] = cscheme.op
         # #= foo =#
         elseif kind(t) == Tokens.COMMENT
-            ansitokens[i] = cscheme.comment
+            crayons[i] = cscheme.comment
         # function f(...)
         elseif kind(t) == Tokens.LPAREN && kind(prev_t) == Tokens.IDENTIFIER
-            ansitokens[i-1] = cscheme.call
+            crayons[i-1] = cscheme.call
              # function f(...)
             if i > 3 && kind(tokens[i-2]) == Tokens.WHITESPACE && exactkind(tokens[i-3]) == Tokens.FUNCTION
-                ansitokens[i-1] = cscheme.function_def
+                crayons[i-1] = cscheme.function_def
             end
         # @fdsafds
         elseif kind(t) == Tokens.IDENTIFIER && exactkind(prev_t) == Tokens.AT_SIGN
-            ansitokens[i-1] = cscheme._macro
-            ansitokens[i] = cscheme._macro
+            crayons[i-1] = cscheme._macro
+            crayons[i] = cscheme._macro
         # 2] = 32.32
         elseif kind(t) == Tokens.INTEGER || kind(t) == Tokens.FLOAT
-            ansitokens[i] = cscheme.number
+            crayons[i] = cscheme.number
         elseif kind(t) == Tokens.WHITESPACE
-            ansitokens[i] = ANSIToken()
+            crayons[i] = Crayon()
         else
-            ansitokens[i] = cscheme.text
+            crayons[i] = cscheme.text
         end
         prev_t = t
     end

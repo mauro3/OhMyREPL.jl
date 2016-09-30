@@ -14,7 +14,6 @@ makedocs(
             "features/bracket_complete.md",
             ],
         "Internals" => Any[
-            "internals/ansitoken.md",
             "internals/passes.md"
             ]
     ]
